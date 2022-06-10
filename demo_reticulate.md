@@ -1,7 +1,7 @@
 Using up-to-date Gudhi library in R
 ================
 Aymeric Stamm
-6/9/22
+6/10/22
 
 ## The [**reticulate**](https://rstudio.github.io/reticulate/) package
 
@@ -31,6 +31,20 @@ environment, along with a suite of useful packages for data science:
 ``` r
 # install.packages("tidyverse")
 library(tidyverse)
+```
+
+    ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+
+    ✔ ggplot2 3.3.6     ✔ purrr   0.3.4
+    ✔ tibble  3.1.7     ✔ dplyr   1.0.9
+    ✔ tidyr   1.2.0     ✔ stringr 1.4.0
+    ✔ readr   2.1.2     ✔ forcats 0.5.1
+
+    ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+    ✖ dplyr::filter() masks stats::filter()
+    ✖ dplyr::lag()    masks stats::lag()
+
+``` r
 # install.packages("reticulate")
 library(reticulate)
 ```
@@ -73,27 +87,31 @@ environment to use for interpreting Python code. This is done with:
 use_condaenv("r-reticulate")
 ```
 
+    Warning: The request to `use_python("/Users/stamm-a/Library/r-miniconda/envs/
+    r-reticulate/bin/python")` will be ignored because the environment variable
+    RETICULATE_PYTHON is set to "/Users/stamm-a/Library/r-miniconda/envs/r-
+    reticulate/bin/python3.9"
+
 If you want to check your Python configuration, you can do:
 
 ``` r
 py_config()
 ```
 
-    python:         /Users/stamm-a/Library/r-miniconda/envs/r-reticulate/bin/python
+    python:         /Users/stamm-a/Library/r-miniconda/envs/r-reticulate/bin/python3.9
     libpython:      /Users/stamm-a/Library/r-miniconda/envs/r-reticulate/lib/libpython3.9.dylib
     pythonhome:     /Users/stamm-a/Library/r-miniconda/envs/r-reticulate:/Users/stamm-a/Library/r-miniconda/envs/r-reticulate
     version:        3.9.6 | packaged by conda-forge | (default, Jul 11 2021, 03:36:15)  [Clang 11.1.0 ]
     numpy:          /Users/stamm-a/Library/r-miniconda/envs/r-reticulate/lib/python3.9/site-packages/numpy
     numpy_version:  1.22.4
 
-    NOTE: Python version was forced by use_python function
+    NOTE: Python version was forced by RETICULATE_PYTHON
 
 You can now create chunks of Python code that will be correctly
 interpreted when knitting your document into an HTML file. Let us make a
 first Python chunk of code to import **numpy** and **gudhi**:
 
-``` {python}
-#| eval: false
+``` python
 import numpy as np
 import gudhi as gd
 import gudhi.representations
@@ -123,8 +141,7 @@ according to the above orbit model and then use the
 diagrams from its alpha complex and turn it into its silhouette
 representation. This can be achieved by a function that looks like:
 
-``` {python}
-#| eval: false
+``` python
 def orbit_silhouette(num_pts = 1000, resolution = 1000, r = 2):
   X = np.empty([num_pts, 2])
   x, y = np.random.uniform(), np.random.uniform()
@@ -173,10 +190,10 @@ accessible from any subsequent R chunk as `py$orbit_silhouette()`:
 ``` r
 n1 <- 10
 n2 <- 10
-x1 <- replicate(n1, orbit_silhouette(r = 1.9), simplify = FALSE)
-x2 <- replicate(n2, orbit_silhouette(r = 2.1), simplify = FALSE)
-# x1 <- replicate(n1, py$orbit_silhouette(r = 1.9), simplify = FALSE)
-# x2 <- replicate(n2, py$orbit_silhouette(r = 2.1), simplify = FALSE)
+# x1 <- replicate(n1, orbit_silhouette(r = 1.9), simplify = FALSE)
+# x2 <- replicate(n2, orbit_silhouette(r = 2.1), simplify = FALSE)
+x1 <- replicate(n1, py$orbit_silhouette(r = 1.9), simplify = FALSE)
+x2 <- replicate(n2, py$orbit_silhouette(r = 2.1), simplify = FALSE)
 
 t1 <- x1 |> map(1) |> map(~ c(0, .x))
 x1 <- x1 |> map(2) |> map(~ c(0, .x))
@@ -201,4 +218,4 @@ df |>
   scale_color_viridis_d()
 ```
 
-![](demo_reticulate_files/figure-gfm/cell-9-output-1.png)
+![](demo_reticulate_files/figure-gfm/unnamed-chunk-10-1.png)

@@ -3,8 +3,9 @@ title: "Using up-to-date Gudhi library in R"
 author: "Aymeric Stamm"
 date: today
 title-block-banner: true
-format: gfm
-jupyter: ir
+format:
+  gfm: default
+  html: default
 editor: visual
 ---
 
@@ -97,7 +98,6 @@ interpreted when knitting your document into an HTML file. Let us make a
 first Python chunk of code to import **numpy** and **gudhi**:
 
 ```{python}
-#| eval: false
 import numpy as np
 import gudhi as gd
 import gudhi.representations
@@ -128,7 +128,6 @@ diagrams from its alpha complex and turn it into its silhouette
 representation. This can be achieved by a function that looks like:
 
 ```{python}
-#| eval: false
 def orbit_silhouette(num_pts = 1000, resolution = 1000, r = 2):
   X = np.empty([num_pts, 2])
   x, y = np.random.uniform(), np.random.uniform()
@@ -148,7 +147,7 @@ def orbit_silhouette(num_pts = 1000, resolution = 1000, r = 2):
 
 ```{r}
 #| echo: false
-source_python("orbit_silhouette.py")
+# source_python("orbit_silhouette.py")
 ```
 
 
@@ -183,10 +182,10 @@ accessible from any subsequent R chunk as `py$orbit_silhouette()`:
 ```{r}
 n1 <- 10
 n2 <- 10
-x1 <- replicate(n1, orbit_silhouette(r = 1.9), simplify = FALSE)
-x2 <- replicate(n2, orbit_silhouette(r = 2.1), simplify = FALSE)
-# x1 <- replicate(n1, py$orbit_silhouette(r = 1.9), simplify = FALSE)
-# x2 <- replicate(n2, py$orbit_silhouette(r = 2.1), simplify = FALSE)
+# x1 <- replicate(n1, orbit_silhouette(r = 1.9), simplify = FALSE)
+# x2 <- replicate(n2, orbit_silhouette(r = 2.1), simplify = FALSE)
+x1 <- replicate(n1, py$orbit_silhouette(r = 1.9), simplify = FALSE)
+x2 <- replicate(n2, py$orbit_silhouette(r = 2.1), simplify = FALSE)
 
 t1 <- x1 |> map(1) |> map(~ c(0, .x))
 x1 <- x1 |> map(2) |> map(~ c(0, .x))
